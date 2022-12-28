@@ -30,10 +30,32 @@ async function run() {
             
             
         });
-        app.post('/tasks', async (req, res)=>{
+        app.post('/tasks', async (req, res) => {
             const tasks = req.body;
             const result = await tasksCollection.insertOne(tasks);
             res.send(result);
+        });
+        app.get('/tasks/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email };
+            const low = query.email?.toLocaleLowerCase();
+            const tasks = await tasksCollection.find({}).toArray();
+            // console.log(tasks)
+            const filter = tasks.filter(task => {
+                console.log(low)
+                if (task.email === low ) {
+                    return task;
+                }
+            })
+            res.send(filter)
+        })
+        app.get('/tasks/my-tasks/:id', async (req, res) => {
+            const id = req.params.id;
+            
+            const filter = { _id: ObjectId(id) };
+            const task = await tasksCollection.findOne(filter);
+            console.log(task)
+            res.send(task);
         })
     }
     finally {
