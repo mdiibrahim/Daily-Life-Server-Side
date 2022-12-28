@@ -30,9 +30,9 @@ async function run() {
             
             
         });
-        app.post('/products', async (req, res)=>{
-            const product = req.body;
-            const result = await tasksCollection.insertOne(product);
+        app.post('/tasks', async (req, res)=>{
+            const tasks = req.body;
+            const result = await tasksCollection.insertOne(tasks);
             res.send(result);
         })
     }
