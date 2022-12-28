@@ -87,7 +87,7 @@ async function run() {
             
             
             const filter = tasks.filter(task => {
-                console.log(task)
+                
                 if (task.email === low && task.completed ==='yes') {
                     
                     return task;
