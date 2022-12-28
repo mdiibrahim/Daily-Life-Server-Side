@@ -54,9 +54,9 @@ async function run() {
             const query = { email };
             const low = query.email?.toLocaleLowerCase();
             const tasks = await tasksCollection.find({}).toArray();
-            // console.log(tasks)
+         
             const filter = tasks.filter(task => {
-                console.log(low)
+                
                 if (task.email === low ) {
                     return task;
                 }
@@ -68,7 +68,7 @@ async function run() {
             
             const filter = { _id: ObjectId(id) };
             const task = await tasksCollection.findOne(filter);
-            console.log(task)
+            
             res.send(task);
         })
         app.delete('/tasks/my-tasks/:id', async (req, res) => {
@@ -76,8 +76,38 @@ async function run() {
             
             const filter = { _id: ObjectId(id) };
             const task = await tasksCollection.deleteOne(filter);
-            console.log(task)
+            
             res.send(task);
+        });
+        app.get('/completed-tasks/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email };
+            const low = query.email?.toLocaleLowerCase();
+            const tasks = await tasksCollection.find({}).toArray();
+            
+            
+            const filter = tasks.filter(task => {
+                console.log(task)
+                if (task.email === low && task.completed ==='yes') {
+                    
+                    return task;
+                }
+            })
+            res.send(filter)
+        })
+        app.put('/completed-tasks/:id', async (req, res) => {
+            const id = req.params.id;
+            const completed = req.body.completed
+            const query = { _id: ObjectId(id) }
+            
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    completed: completed
+                }
+            }
+            const result = await tasksCollection.updateOne(query, updatedDoc, options);
+            res.send(result);
         })
     }
     finally {
