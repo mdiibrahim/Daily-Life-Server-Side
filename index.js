@@ -35,6 +35,20 @@ async function run() {
             const result = await tasksCollection.insertOne(tasks);
             res.send(result);
         });
+        app.put('/tasks/:id', async (req, res) => {
+            const id = req.params.id;
+            const completed = req.body.completed
+            const query = { _id: ObjectId(id) }
+            
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    completed: completed
+                }
+            }
+            const result = await tasksCollection.updateOne(query, updatedDoc, options);
+            res.send(result);
+        });
         app.get('/tasks/:email', async (req, res) => {
             const email = req.params.email;
             const query = { email };
@@ -54,6 +68,14 @@ async function run() {
             
             const filter = { _id: ObjectId(id) };
             const task = await tasksCollection.findOne(filter);
+            console.log(task)
+            res.send(task);
+        })
+        app.delete('/tasks/my-tasks/:id', async (req, res) => {
+            const id = req.params.id;
+            
+            const filter = { _id: ObjectId(id) };
+            const task = await tasksCollection.deleteOne(filter);
             console.log(task)
             res.send(task);
         })
