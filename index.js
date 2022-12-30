@@ -49,6 +49,41 @@ async function run() {
             const result = await tasksCollection.updateOne(query, updatedDoc, options);
             res.send(result);
         });
+        app.put('/update-tasks/:id', async (req, res) => {
+            const id = req.params.id;
+            const title = req.body.title;
+            const details = req.body.details;
+            const query = { _id: ObjectId(id) }
+            const options = { upsert: true };
+            const taskImage = req.body.taskImage;
+            if (taskImage) {
+                
+                const updatedDoc = {
+                    $set: {
+                        details: details,
+                        title: title,
+                        taskImage:taskImage
+                    }
+                }
+                const result = await tasksCollection.updateMany(query, updatedDoc, options);
+                res.send(result);
+            }
+            else {
+                
+                const updatedDoc = {
+                    $set: {
+                        details: details,
+                        title: title,
+                    }
+                }
+                const result = await tasksCollection.updateMany(query, updatedDoc, options);
+                res.send(result);
+            }
+            
+            
+
+           
+        });
         app.get('/tasks/:email', async (req, res) => {
             const email = req.params.email;
             const query = { email };
