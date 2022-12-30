@@ -20,15 +20,15 @@ async function run() {
         const tasksCollection = client.db('daily-life').collection('tasks');
         app.post('/users', async (req, res) => {
             const user = req.body;
-            
+
             const copiedUser = await usersCollection.findOne(user);
             if (!copiedUser) {
 
                 res.send(await usersCollection.insertOne(user));
             }
             res.status(200).send({ acknowledged: 'successfull' })
-            
-            
+
+
         });
         app.post('/tasks', async (req, res) => {
             const tasks = req.body;
@@ -39,7 +39,7 @@ async function run() {
             const id = req.params.id;
             const completed = req.body.completed
             const query = { _id: ObjectId(id) }
-            
+
             const options = { upsert: true };
             const updatedDoc = {
                 $set: {
@@ -54,10 +54,10 @@ async function run() {
             const query = { email };
             const low = query.email?.toLocaleLowerCase();
             const tasks = await tasksCollection.find({}).toArray();
-         
+
             const filter = tasks.filter(task => {
-                
-                if (task.email === low ) {
+
+                if (task.email === low) {
                     return task;
                 }
             })
@@ -65,18 +65,18 @@ async function run() {
         })
         app.get('/tasks/my-tasks/:id', async (req, res) => {
             const id = req.params.id;
-            
+
             const filter = { _id: ObjectId(id) };
             const task = await tasksCollection.findOne(filter);
-            
+
             res.send(task);
         })
         app.delete('/tasks/my-tasks/:id', async (req, res) => {
             const id = req.params.id;
-            
+
             const filter = { _id: ObjectId(id) };
             const task = await tasksCollection.deleteOne(filter);
-            
+
             res.send(task);
         });
         app.get('/completed-tasks/:email', async (req, res) => {
@@ -84,12 +84,12 @@ async function run() {
             const query = { email };
             const low = query.email?.toLocaleLowerCase();
             const tasks = await tasksCollection.find({}).toArray();
-            
-            
+
+
             const filter = tasks.filter(task => {
-                
-                if (task.email === low && task.completed ==='yes') {
-                    
+
+                if (task.email === low && task.completed === 'yes') {
+
                     return task;
                 }
             })
@@ -97,14 +97,18 @@ async function run() {
         })
         app.put('/completed-tasks/:id', async (req, res) => {
             const id = req.params.id;
-            const completed = req.body.completed
+            const comment = req.body.comments;
+            console.log(comment)
+
             const query = { _id: ObjectId(id) }
-            
+
             const options = { upsert: true };
             const updatedDoc = {
-                $set: {
-                    completed: completed
+
+                $push: {
+                    comments: comment,
                 }
+
             }
             const result = await tasksCollection.updateOne(query, updatedDoc, options);
             res.send(result);
